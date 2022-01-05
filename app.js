@@ -8,6 +8,7 @@ const app = express();
 
 
 var items = [];
+let workItems =[];
 
 app.set('view engine', 'ejs');
 
@@ -25,19 +26,43 @@ app.get("/", function(req, res) {
     month: "long"
   };
   var day = today.toLocaleDateString("en-US",options);
-   res.render("list",{kindOfDay: day, newListItem:items, lengths: items.length});
+  //renderizar mi list.ejs page
+   res.render("list",{listTitle: day, newListItem:items});
 
 });
+
+//agregando otra ruta
+app.get("/work", function(req,res){
+  //renderizar mi list.ejs page,le pasamos nuestro listTitle que sera igual a "work List", le pasamos nuestro newListItem tamnien
+  res.render("list",{listTitle: "Work List", newListItem:workItems});
+});
+
+app.post("/work", function(req,res){
+  // aqui creamos un item que capture mi req.body.newListItem
+  let item = req.body.newItem;
+  workItems.push(item);
+//para que se vaya al get de aqui arribita
+  res.redirect("/work");
+})
+
+
 
 //aqui capturamos la informacion despues de presionar el botin
 app.post("/", function(req,res){
   var item = req.body.newItem
-  items.push(item)
 
-  res.redirect("/");
+  if(req.body.list==="Work"){
+    workItems.push(item);
+    res.redirect("/work")
+  } else{
+    items.push(item);
+    res.redirect("/")
 
-  console.log(items);
-  //console.log("post request recived")
+  }
+
+  //console.log(req.body); PRUEBA2
+
+  //console.log("post request recived") PRUEBA1
 
 
 })
